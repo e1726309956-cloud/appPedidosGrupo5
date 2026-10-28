@@ -22,8 +22,12 @@ public class FirebaseAuthService
             returnSecureToken = true
         });
 
-        // Devuelve el identificador del usuario creado.
-        return respuesta.GetProperty("localId").GetString()!;
+        if (!respuesta.TryGetProperty("localId", out var localId) ||
+            localId.ValueKind != JsonValueKind.String ||
+            string.IsNullOrWhiteSpace(localId.GetString()))
+            throw new InvalidOperationException(Constantes.ErrorIdentificadorCuenta);
+
+        return localId.GetString()!;
     }
 
     public async Task<SesionFirebase> IniciarSesionAsync(
@@ -37,18 +41,32 @@ public class FirebaseAuthService
                 returnSecureToken = true
             });
 
-        var uid = respuesta.GetProperty("localId").GetString()!;
-        var token = respuesta.GetProperty("idToken").GetString()!;
+        if (!respuesta.TryGetProperty("localId", out var localId) ||
+            localId.ValueKind != JsonValueKind.String ||
+            string.IsNullOrWhiteSpace(localId.GetString()))
+            throw new InvalidOperationException(Constantes.ErrorIdentificadorSesion);
+
+        if (!respuesta.TryGetProperty("idToken", out var tokenJson) ||
+            tokenJson.ValueKind != JsonValueKind.String ||
+            string.IsNullOrWhiteSpace(tokenJson.GetString()))
+            throw new InvalidOperationException(Constantes.ErrorSesionInvalida);
+
+        var uid = localId.GetString()!;
+        var token = tokenJson.GetString()!;
 
         var partes = token.Split('.');
         if (partes.Length != 3)
-            throw new InvalidOperationException("Firebase devolvió un token de sesión inválido.");
+            throw new InvalidOperationException(Constantes.ErrorTokenInvalido);
         var payload = partes[1].Replace('-', '+').Replace('_', '/');
         payload = payload.PadRight((payload.Length + 3) / 4 * 4, '=');
         using var documento = JsonDocument.Parse(Convert.FromBase64String(payload));
-        var proyectoId = documento.RootElement.GetProperty("aud").GetString();
+        if (!documento.RootElement.TryGetProperty("aud", out var aud) ||
+            aud.ValueKind != JsonValueKind.String)
+            throw new InvalidOperationException(Constantes.ErrorProyectoFirebase);
+
+        var proyectoId = aud.GetString();
         if (string.IsNullOrWhiteSpace(proyectoId))
-            throw new InvalidOperationException("No se pudo identificar el proyecto de Firebase.");
+            throw new InvalidOperationException(Constantes.ErrorProyectoFirebase);
         return new SesionFirebase(uid, token, proyectoId);
     }
 
@@ -64,17 +82,16 @@ public class FirebaseAuthService
         using var respuesta = await Cliente.SendAsync(solicitud);
         if (respuesta.StatusCode == HttpStatusCode.NotFound)
             throw new InvalidOperationException(
-                "No se encontró el perfil en usuarios/" + sesion.Uid +
-                ". Comprueba que el ID del documento coincida con el UID de Authentication.");
+                string.Format(Constantes.ErrorPerfilAusente, sesion.Uid));
         if (respuesta.StatusCode == HttpStatusCode.Forbidden)
             throw new InvalidOperationException(
-                "Firestore no permitió consultar el rol. Revisa las reglas de lectura del perfil del usuario.");
+                Constantes.ErrorLecturaRol);
         if (respuesta.StatusCode == HttpStatusCode.Unauthorized)
             throw new InvalidOperationException(
-                "Firestore no aceptó la sesión. Vuelve a iniciar sesión.");
+                Constantes.ErrorSesionRechazada);
         if (!respuesta.IsSuccessStatusCode)
             throw new InvalidOperationException(
-                "No se pudo consultar el rol en Firestore. Inténtalo nuevamente.");
+                Constantes.ErrorConsultaRol);
 
         using var documento = JsonDocument.Parse(await respuesta.Content.ReadAsStringAsync());
         if (!documento.RootElement.TryGetProperty("fields", out var campos) ||
@@ -84,7 +101,7 @@ public class FirebaseAuthService
             string.IsNullOrWhiteSpace(valorRol.GetString()))
         {
             throw new InvalidOperationException(
-                "El perfil existe, pero el campo rol debe contener un texto válido.");
+                Constantes.ErrorRolInvalido);
         }
         return valorRol.GetString()!;
     }
@@ -135,31 +152,31 @@ public class FirebaseAuthService
     private static string TraducirError(string codigo)
     {
         if (codigo.StartsWith("WEAK_PASSWORD"))
-            return "La contraseña no cumple los requisitos de Firebase.";
+            return Constantes.ErrorContrasenaFirebase;
 
         return codigo switch
         {
             "EMAIL_EXISTS" =>
-                "Ya existe una cuenta con ese correo.",
+                Constantes.ErrorCorreoRegistrado,
 
             "INVALID_EMAIL" =>
-                "El correo electrónico no es válido.",
+                Constantes.ErrorCorreoFirebase,
 
             "INVALID_LOGIN_CREDENTIALS" or
             "EMAIL_NOT_FOUND" or
             "INVALID_PASSWORD" =>
-                "El correo o la contraseña son incorrectos.",
+                Constantes.ErrorCredenciales,
 
             "USER_DISABLED" =>
-                "Esta cuenta está deshabilitada.",
+                Constantes.ErrorCuentaDeshabilitada,
 
             "TOO_MANY_ATTEMPTS_TRY_LATER" =>
-                "Demasiados intentos. Inténtalo más tarde.",
+                Constantes.ErrorDemasiadosIntentos,
 
             "OPERATION_NOT_ALLOWED" =>
-                "Activa correo y contraseña en Firebase Authentication.",
+                Constantes.ErrorProveedorDeshabilitado,
 
-            _ => "No se pudo completar la operación con Firebase."
+            _ => Constantes.ErrorOperacionFirebase
         };
     }
 }

@@ -18,7 +18,7 @@ public sealed class PermisosService(FirebaseAuthService.SesionFirebase sesion)
         Rol = "";
         var rol = (await new FirebaseAuthService().ObtenerRolAsync(sesion)).Trim().ToLowerInvariant();
         if (rol is not ("cliente" or "administrador" or "vendedor"))
-            throw new InvalidOperationException("El usuario no tiene un rol reconocido: cliente, administrador o vendedor.");
+            throw new InvalidOperationException(Constantes.ErrorRolDesconocido);
 
         var url = "https://firestore.googleapis.com/v1/projects/" +
             Uri.EscapeDataString(sesion.ProyectoId) + "/databases/(default)/documents/roles/" + rol;
@@ -26,19 +26,19 @@ public sealed class PermisosService(FirebaseAuthService.SesionFirebase sesion)
         solicitud.Headers.Authorization = new AuthenticationHeaderValue("Bearer", sesion.IdToken);
         using var respuesta = await Cliente.SendAsync(solicitud);
         if (respuesta.StatusCode == HttpStatusCode.Unauthorized)
-            throw new InvalidOperationException("La sesión venció. Cierra sesión e ingresa nuevamente.");
+            throw new InvalidOperationException(Constantes.ErrorSesionVencida);
         if (respuesta.StatusCode == HttpStatusCode.NotFound)
-            throw new InvalidOperationException("No existe el documento roles/" + rol + ". Créalo en Firestore con el campo pantallas de tipo mapa.");
+            throw new InvalidOperationException(string.Format(Constantes.ErrorRolAusente, rol));
         if (respuesta.StatusCode == HttpStatusCode.Forbidden)
-            throw new InvalidOperationException("Firestore denegó permisos/" + rol + ". Publica firestore.rules y verifica que usuarios/" + sesion.Uid + " tenga un campo rol válido.");
+            throw new InvalidOperationException(string.Format(Constantes.ErrorPermisosDenegados, rol, sesion.Uid));
         if (!respuesta.IsSuccessStatusCode)
-            throw new InvalidOperationException("No se pudieron consultar los permisos. Revisa el documento roles/" + rol + " y las reglas de Firestore.");
+            throw new InvalidOperationException(string.Format(Constantes.ErrorConsultaPermisos, rol));
 
         using var documento = JsonDocument.Parse(await respuesta.Content.ReadAsStringAsync());
         if (!documento.RootElement.TryGetProperty("fields", out var campos) ||
             !campos.TryGetProperty("pantallas", out var mapa) ||
             !mapa.TryGetProperty("mapValue", out var valorMapa))
-            throw new InvalidOperationException("El documento del rol debe tener un campo pantallas de tipo mapa.");
+            throw new InvalidOperationException(Constantes.ErrorMapaPantallas);
 
         if (valorMapa.TryGetProperty("fields", out var permisos))
             foreach (var permiso in permisos.EnumerateObject())

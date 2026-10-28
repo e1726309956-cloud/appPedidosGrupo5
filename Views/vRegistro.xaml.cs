@@ -15,17 +15,22 @@ public partial class vRegistro : ContentPage
         if (ocupado) return;
         if (!ValidacionSeguridad.CorreoValido(txtCorreo.Text))
         {
-            await DisplayAlertAsync("Revisa tus datos", "Ingresa un correo electrónico válido.", "Aceptar");
+            await DisplayAlertAsync(Constantes.TituloRevisarDatos, Constantes.CorreoRequerido, Constantes.Aceptar);
             return;
         }
         if (string.IsNullOrWhiteSpace(txtContrasena.Text) || txtContrasena.Text.Length < 6)
         {
-            await DisplayAlertAsync("Revisa tu contraseña", "Usa al menos 6 caracteres.", "Aceptar");
+            await DisplayAlertAsync(Constantes.TituloRevisarContrasena, Constantes.ContrasenaCorta, Constantes.Aceptar);
             return;
         }
         if (txtContrasena.Text != txtConfirmacion.Text)
         {
-            await DisplayAlertAsync("Revisa tu contraseña", "Las contraseñas no coinciden.", "Aceptar");
+            await DisplayAlertAsync(Constantes.TituloRevisarContrasena, Constantes.ContrasenasDistintas, Constantes.Aceptar);
+            return;
+        }
+        if (!ValidacionSeguridad.HayInternet())
+        {
+            await DisplayAlertAsync(Constantes.TituloSinInternet, Constantes.SinInternet, Constantes.Aceptar);
             return;
         }
 
@@ -34,12 +39,12 @@ public partial class vRegistro : ContentPage
         {
             await servicio.RegistrarAsync(txtCorreo.Text.Trim(), txtContrasena.Text);
             txtContrasena.Text = txtConfirmacion.Text = string.Empty;
-            await DisplayAlertAsync("Cuenta creada", "Ya puedes iniciar sesión con tu correo y contraseña.", "Aceptar");
+            await DisplayAlertAsync("Cuenta creada", "Ya puedes iniciar sesión con tu correo y contraseña.", Constantes.Aceptar);
             await Navigation.PopAsync();
         }
         catch (Exception error)
         {
-            await DisplayAlertAsync("No se pudo crear la cuenta", ValidacionSeguridad.MensajeError(error), "Aceptar");
+            await DisplayAlertAsync(Constantes.TituloErrorRegistro, ValidacionSeguridad.MensajeError(error), Constantes.Aceptar);
         }
         finally { CambiarEstado(false); }
     }
