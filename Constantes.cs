@@ -1,8 +1,12 @@
 namespace appPedidosGrupo5;
 
-/// <summary>Mensajes compartidos de validación, errores y alertas.</summary>
+/// <summary>Identificadores de pantallas y mensajes compartidos de la aplicación.</summary>
 public static class Constantes
 {
+    public const string PantallaCatalogo = "catalogo";
+    public const string PantallaPedidos = "pedidos";
+    public const string PantallaAdministracion = "administracion";
+
     public const string ErrorConfiguracionAusente = "Falta la configuración de Firebase. Copia firebase.example.json a firebase.local.json, configura ApiKey y vuelve a compilar la aplicación.";
     public const string ErrorPerfilAusente = "No se encontró el perfil en usuarios/{0}. Comprueba que el ID del documento coincida con el UID de Authentication.";
     public const string ErrorRolAusente = "No existe el documento roles/{0}. Créalo en Firestore con el campo pantallas de tipo mapa.";

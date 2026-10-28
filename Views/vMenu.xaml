@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appPedidosGrupo5.Views.vMenu"
+             Title="Inicio" BackgroundColor="{StaticResource FloralCream}"
+             NavigationPage.HasNavigationBar="False">
+    <Grid RowDefinitions="Auto,*,Auto">
+        <Grid Padding="20,14" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" BackgroundColor="White">
+            <Image Source="floreria_ramo.png" WidthRequest="44" HeightRequest="44" />
+            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                <Label Text="FLORERÍA" Style="{StaticResource EtiquetaFloral}" CharacterSpacing="3" />
+                <Label Text="Grupo 5 · Un detalle especial" FontSize="11" TextColor="#677369" />
+            </VerticalStackLayout>
+            <Button Grid.Column="2" Text="Menú" Clicked="AlternarMenu_Clicked"
+                    Style="{StaticResource BotonSecundarioFloral}" MinimumHeightRequest="44"
+                    SemanticProperties.Description="Mostrar u ocultar el menú de navegación" />
+        </Grid>
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20,24" Spacing="22" MaximumWidthRequest="850" HorizontalOptions="Fill">
+                <Border BackgroundColor="{StaticResource FloralGreen}" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 24" Padding="24">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <VerticalStackLayout Spacing="12">
+                            <Label x:Name="EtiquetaRol" Text="TU ESPACIO" FontSize="11" CharacterSpacing="2" TextColor="#EBCDD5" />
+                            <Label x:Name="Saludo" Text="Bienvenido a tu florería" FontFamily="OpenSansSemibold"
+                                   FontSize="28" TextColor="White" />
+                            <Label x:Name="DescripcionRol" Text="Todo listo para un nuevo detalle."
+                                   FontSize="14" TextColor="#E8EFE8" LineHeight="1.3" />
+                        </VerticalStackLayout>
+                        <Image Grid.Column="1" Source="floreria_ramo.png" WidthRequest="72" HeightRequest="100"
+                               VerticalOptions="Center" SemanticProperties.Description="Ramo de flores" />
+                    </Grid>
+                </Border>
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="¿Qué quieres hacer hoy?" Style="{StaticResource TituloFloral}" FontSize="22" />
+                    <Label Text="Encuentra aquí las secciones disponibles para ti." Style="{StaticResource TextoFloral}" />
+                </VerticalStackLayout>
+                <ActivityIndicator x:Name="Indicador" Color="{StaticResource FloralGreen}" IsVisible="False" />
+                <Label x:Name="Estado" Style="{StaticResource TextoFloral}" />
+                <VerticalStackLayout x:Name="Tarjetas" Spacing="14" />
+                <Button x:Name="BotonActualizar" Text="Actualizar accesos" Clicked="Actualizar_Clicked"
+                        Style="{StaticResource BotonSecundarioFloral}" />
+                <Label Text="Un detalle, mil maneras de decirlo." Style="{StaticResource TextoFloral}"
+                       FontSize="12" HorizontalTextAlignment="Center" Margin="0,6" />
+            </VerticalStackLayout>
+        </ScrollView>
+        <Grid Grid.Row="2" Padding="20,10" ColumnDefinitions="*,Auto" BackgroundColor="White">
+            <Label Text="Inicio" Style="{StaticResource EtiquetaFloral}" VerticalOptions="Center" />
+            <Button Grid.Column="1" Text="Cerrar sesión" Clicked="CerrarSesion_Clicked"
+                    Style="{StaticResource BotonEnlaceFloral}" />
+        </Grid>
+        <Grid x:Name="PanelMenu" Grid.Row="1" Grid.RowSpan="2" IsVisible="False" BackgroundColor="{StaticResource FloralCream}">
+            <ScrollView>
+                <VerticalStackLayout Padding="24" Spacing="18" MaximumWidthRequest="600" HorizontalOptions="Fill">
+                    <Label Text="Tu menú" Style="{StaticResource TituloFloral}" />
+                    <Label x:Name="RolMenu" Style="{StaticResource TextoFloral}" />
+                    <Button Text="Inicio" Clicked="AlternarMenu_Clicked" Style="{StaticResource BotonSecundarioFloral}" />
+                    <VerticalStackLayout x:Name="OpcionesMenu" Spacing="12" />
+                    <Label x:Name="EstadoMenu" Style="{StaticResource TextoFloral}" />
+                    <Button Text="Cerrar sesión" Clicked="CerrarSesion_Clicked" Style="{StaticResource BotonEnlaceFloral}" />
+                </VerticalStackLayout>
+            </ScrollView>
+        </Grid>
+    </Grid>
+</ContentPage>

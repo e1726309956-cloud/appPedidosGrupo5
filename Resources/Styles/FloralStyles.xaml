@@ -4,6 +4,11 @@
     <Color x:Key="FloralCream">#FFF9F3</Color>
     <Color x:Key="FloralGreen">#244C3A</Color>
     <Color x:Key="FloralRose">#D98C9D</Color>
+    <Style x:Key="TarjetaFloral" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="White" />
+        <Setter Property="Stroke" Value="#EAE7DF" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 20" />
+    </Style>
     <Style x:Key="TituloFloral" TargetType="Label">
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="28" />
