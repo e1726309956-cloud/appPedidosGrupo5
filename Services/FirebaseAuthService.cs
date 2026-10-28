@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Json;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Net;
 using System.Net.Http.Headers;
@@ -7,9 +7,6 @@ namespace appPedidosGrupo5.Services;
 
 public class FirebaseAuthService
 {
-    // Coloca aquí el valor current_key de google-services.json.
-    private const string ApiKey = "AIzaSyDS4T9EgMostkbKjyW8HIwfaJtkI9ON8OA";
-
     private static readonly HttpClient Cliente = new()
     {
         Timeout = TimeSpan.FromSeconds(30)
@@ -104,15 +101,11 @@ public class FirebaseAuthService
     private static async Task<JsonElement> EnviarAsync(
         string operacion, object datos)
     {
-        if (string.IsNullOrWhiteSpace(ApiKey))
-        {
-            throw new InvalidOperationException(
-                "Configura la clave API de Firebase.");
-        }
+        var apiKey = await FirebaseConfiguration.LeerApiKeyAsync();
 
         var url =
             $"https://identitytoolkit.googleapis.com/v1/{operacion}" +
-            $"?key={ApiKey}";
+            $"?key={Uri.EscapeDataString(apiKey)}";
 
         using var respuesta = await Cliente.PostAsJsonAsync(url, datos);
         var contenido = await respuesta.Content.ReadAsStringAsync();
