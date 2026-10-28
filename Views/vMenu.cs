@@ -67,8 +67,8 @@ public sealed class vMenu : ContentPage
         }
         catch (Exception error)
         {
-            estado.Text = "No se pudieron cargar los accesos.";
-            await DisplayAlertAsync("Accesos", ValidacionSeguridad.MensajeError(error), "Aceptar");
+            estado.Text = Constantes.ErrorCargarAccesos;
+            await DisplayAlertAsync(Constantes.TituloAccesos, ValidacionSeguridad.MensajeError(error), Constantes.Aceptar);
         }
         finally { ocupado = false; }
     }
@@ -84,8 +84,8 @@ public sealed class vMenu : ContentPage
             if (!permisos.PuedeAcceder(id))
             {
                 opciones.Children.Clear();
-                estado.Text = "Tus accesos cambiaron. Pulsa Actualizar accesos.";
-                await DisplayAlertAsync("Acceso restringido", "Tu rol no tiene acceso a esta pantalla.", "Aceptar");
+                estado.Text = Constantes.AccesosCambiaron;
+                await DisplayAlertAsync(Constantes.TituloAccesoRestringido, Constantes.AccesoDenegado, Constantes.Aceptar);
                 return;
             }
             // Sustituir por la página real cuando esté construida.
@@ -106,8 +106,8 @@ public sealed class vMenu : ContentPage
         catch (Exception error)
         {
             opciones.Children.Clear();
-            estado.Text = "Actualiza los accesos o vuelve a iniciar sesión.";
-            await DisplayAlertAsync("Accesos", ValidacionSeguridad.MensajeError(error), "Aceptar");
+            estado.Text = Constantes.ReintentarAccesos;
+            await DisplayAlertAsync(Constantes.TituloAccesos, ValidacionSeguridad.MensajeError(error), Constantes.Aceptar);
         }
         finally { ocupado = false; }
     }

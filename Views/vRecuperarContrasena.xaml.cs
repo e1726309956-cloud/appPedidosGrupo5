@@ -15,12 +15,12 @@ public partial class vRecuperarContrasena : ContentPage
         if (ocupado) return;
         if (!ValidacionSeguridad.CorreoValido(txtCorreo.Text))
         {
-            await DisplayAlertAsync("Revisa tus datos", "Ingresa un correo electrónico válido.", "Aceptar");
+            await DisplayAlertAsync(Constantes.TituloRevisarDatos, Constantes.CorreoRequerido, Constantes.Aceptar);
             return;
         }
         if (!ValidacionSeguridad.HayInternet())
         {
-            await DisplayAlertAsync("Sin conexión a Internet", "No tienes acceso a Internet. Conéctate a una red e inténtalo nuevamente.", "Aceptar");
+            await DisplayAlertAsync(Constantes.TituloSinInternet, Constantes.SinInternet, Constantes.Aceptar);
             return;
         }
 
@@ -29,12 +29,12 @@ public partial class vRecuperarContrasena : ContentPage
         {
             await servicio.RecuperarContrasenaAsync(txtCorreo.Text.Trim());
             await DisplayAlertAsync("Solicitud recibida",
-                "Si existe una cuenta con ese correo, recibirás un enlace para cambiar tu contraseña. Revisa también el correo no deseado.", "Aceptar");
+                "Si existe una cuenta con ese correo, recibirás un enlace para cambiar tu contraseña. Revisa también el correo no deseado.", Constantes.Aceptar);
             await Navigation.PopAsync();
         }
         catch (Exception error)
         {
-            await DisplayAlertAsync("No se pudo enviar el enlace", ValidacionSeguridad.MensajeError(error), "Aceptar");
+            await DisplayAlertAsync(Constantes.TituloErrorRecuperacion, ValidacionSeguridad.MensajeError(error), Constantes.Aceptar);
         }
         finally { CambiarEstado(false); }
     }

@@ -16,13 +16,13 @@ public partial class vLogin : ContentPage
         if (!ValidacionSeguridad.CorreoValido(txtCorreo.Text) ||
             string.IsNullOrEmpty(txtContrasena.Text))
         {
-            await DisplayAlertAsync("Revisa tus datos", "Ingresa un correo válido y tu contraseña.", "Aceptar");
+            await DisplayAlertAsync(Constantes.TituloRevisarDatos, Constantes.CredencialesRequeridas, Constantes.Aceptar);
             return;
         }
 
         if (!ValidacionSeguridad.HayInternet())
         {
-            await DisplayAlertAsync("Sin conexión a Internet", "No tienes acceso a Internet. Conéctate a una red e inténtalo nuevamente.", "Aceptar");
+            await DisplayAlertAsync(Constantes.TituloSinInternet, Constantes.SinInternet, Constantes.Aceptar);
             return;
         }
 
@@ -41,8 +41,8 @@ public partial class vLogin : ContentPage
         catch (Exception error)
         {
             await DisplayAlertAsync(
-                autenticado ? "No se pudieron cargar los accesos" : "No se pudo iniciar sesión",
-                ValidacionSeguridad.MensajeError(error), "Aceptar");
+                autenticado ? Constantes.TituloErrorAccesos : Constantes.TituloErrorLogin,
+                ValidacionSeguridad.MensajeError(error), Constantes.Aceptar);
         }
         finally { CambiarEstado(false); }
     }

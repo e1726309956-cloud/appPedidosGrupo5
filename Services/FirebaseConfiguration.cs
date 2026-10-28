@@ -11,8 +11,7 @@ internal static class FirebaseConfiguration
 
         if (archivo is null)
             throw new InvalidOperationException(
-                "Falta la configuración de Firebase. Copia firebase.example.json a " +
-                "firebase.local.json, configura ApiKey y vuelve a compilar la aplicación.");
+                Constantes.ErrorConfiguracionAusente);
 
         try
         {
@@ -28,10 +27,10 @@ internal static class FirebaseConfiguration
         catch (JsonException)
         {
             throw new InvalidOperationException(
-                "firebase.local.json no contiene un JSON válido. Corrige el archivo y vuelve a compilar.");
+                Constantes.ErrorConfiguracionJson);
         }
 
         throw new InvalidOperationException(
-            "Configura ApiKey en firebase.local.json y vuelve a compilar la aplicación.");
+            Constantes.ErrorApiKey);
     }
 }

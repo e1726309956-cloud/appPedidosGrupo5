@@ -1,5 +1,6 @@
 using Microsoft.Maui.Networking;
 using System.Net.Mail;
+using System.Text.Json;
 
 namespace appPedidosGrupo5.Views;
 
@@ -15,9 +16,11 @@ internal static class ValidacionSeguridad
 
     public static string MensajeError(Exception error) => error switch
     {
-        HttpRequestException => "No se pudo conectar. Revisa tu conexión a Internet.",
-        TaskCanceledException => "La solicitud tardó demasiado. Inténtalo nuevamente.",
+        HttpRequestException => Constantes.ErrorConexion,
+        TaskCanceledException => Constantes.ErrorTiempoEspera,
+        JsonException => Constantes.ErrorDatosFirebase,
+        FormatException => Constantes.ErrorFormatoFirebase,
         InvalidOperationException => error.Message,
-        _ => "No se pudo completar la operación. Inténtalo nuevamente."
+        _ => Constantes.ErrorGeneral
     };
 }
