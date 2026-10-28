@@ -11,7 +11,12 @@ namespace appPedidosGrupo5
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new NavigationPage(new Views.vLogin()));
+            return new Window(CrearPaginaInicial());
         }
+
+        public static Page CrearPaginaInicial() => new NavigationPage(
+            Constantes.UsarAutenticacion
+                ? new Views.vLogin()
+                : new Views.vMenu());
     }
 }

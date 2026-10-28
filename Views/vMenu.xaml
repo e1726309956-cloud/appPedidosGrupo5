@@ -46,7 +46,7 @@
         </ScrollView>
         <Grid Grid.Row="2" Padding="20,10" ColumnDefinitions="*,Auto" BackgroundColor="White">
             <Label Text="Inicio" Style="{StaticResource EtiquetaFloral}" VerticalOptions="Center" />
-            <Button Grid.Column="1" Text="Cerrar sesión" Clicked="CerrarSesion_Clicked"
+            <Button x:Name="BotonCerrarSesion" Grid.Column="1" Text="Cerrar sesión" Clicked="CerrarSesion_Clicked"
                     Style="{StaticResource BotonEnlaceFloral}" />
         </Grid>
         <Grid x:Name="PanelMenu" Grid.Row="1" Grid.RowSpan="2" IsVisible="False" BackgroundColor="{StaticResource FloralCream}">
@@ -57,7 +57,7 @@
                     <Button Text="Inicio" Clicked="AlternarMenu_Clicked" Style="{StaticResource BotonSecundarioFloral}" />
                     <VerticalStackLayout x:Name="OpcionesMenu" Spacing="12" />
                     <Label x:Name="EstadoMenu" Style="{StaticResource TextoFloral}" />
-                    <Button Text="Cerrar sesión" Clicked="CerrarSesion_Clicked" Style="{StaticResource BotonEnlaceFloral}" />
+                    <Button x:Name="BotonCerrarSesionMenu" Text="Cerrar sesión" Clicked="CerrarSesion_Clicked" Style="{StaticResource BotonEnlaceFloral}" />
                 </VerticalStackLayout>
             </ScrollView>
         </Grid>
