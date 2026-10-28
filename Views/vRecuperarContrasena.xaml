@@ -2,17 +2,57 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="appPedidosGrupo5.Views.vRecuperarContrasena"
-             Title="Recuperar contraseña">
+             Title="Recuperar acceso" BackgroundColor="{StaticResource FloralCream}">
     <ScrollView>
-      <VerticalStackLayout x:Name="Formulario" Padding="24" Spacing="18"
-                           MaximumWidthRequest="480" HorizontalOptions="Fill">
-        <Label Text="Recupera tu acceso" FontSize="28" FontAttributes="Bold" />
-        <Label Text="Te enviaremos un enlace para restablecer tu contraseña." />
-        <Label Text="Correo electrónico" />
-        <Entry x:Name="txtCorreo" Placeholder="nombre@correo.com"
-               Keyboard="Email" MaxLength="254" />
-        <Button Text="Enviar enlace de recuperación" Clicked="btnEnviar_Clicked" />
-        <ActivityIndicator x:Name="Indicador" IsVisible="False" IsRunning="False" />
-      </VerticalStackLayout>
+        <VerticalStackLayout x:Name="Formulario" Padding="24,32" Spacing="24"
+                             MaximumWidthRequest="480" HorizontalOptions="Fill">
+            <VerticalStackLayout Spacing="12">
+                <Grid ColumnDefinitions="56,*" ColumnSpacing="14">
+                    <Border BackgroundColor="#FAEDF0" StrokeThickness="0" StrokeShape="RoundRectangle 18"
+                            WidthRequest="56" HeightRequest="56">
+                        <Image Source="floral_mark.svg" WidthRequest="40" HeightRequest="40"
+                               SemanticProperties.Description="Emblema floral" />
+                    </Border>
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="3">
+                        <Label Text="FLORERÍA" FontFamily="OpenSansSemibold" FontSize="16"
+                               CharacterSpacing="3" TextColor="{StaticResource FloralGreen}" />
+                        <Label Text="G R U P O  5" FontSize="10" TextColor="#677369" />
+                    </VerticalStackLayout>
+                </Grid>
+                <Label Text="Volvamos a conectar." Style="{StaticResource FloralTitle}" Margin="0,10,0,0" />
+                <Label Text="Un pequeño paso para volver a tus flores favoritas." Style="{StaticResource FloralBody}" />
+            </VerticalStackLayout>
+            <Border BackgroundColor="White" Stroke="#EAE7DF" StrokeShape="RoundRectangle 24" Padding="24">
+                <VerticalStackLayout Spacing="20">
+                    <VerticalStackLayout Spacing="8">
+                        <BoxView Color="{StaticResource FloralRose}" HeightRequest="4" WidthRequest="36"
+                                 HorizontalOptions="Start" CornerRadius="2" />
+                        <Label Text="Recupera tu acceso" Style="{StaticResource FloralTitle}" FontSize="22" />
+                        <Label Text="Ingresa tu correo y te enviaremos un enlace para cambiar tu contraseña." Style="{StaticResource FloralBody}" />
+                    </VerticalStackLayout>
+                <VerticalStackLayout Spacing="7">
+                    <Label Text="Correo electrónico" Style="{StaticResource FloralLabel}" />
+                    <Border Style="{StaticResource FloralFieldBorder}">
+                        <Entry x:Name="txtCorreo" Placeholder="nombre@correo.com"
+                               Keyboard="Email" MaxLength="254" Style="{StaticResource FloralEntry}" />
+                    </Border>
+                </VerticalStackLayout>
+                    <Grid RowSpacing="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Button Text="Enviar enlace de recuperación" Clicked="btnEnviar_Clicked"
+                                Grid.Row="0" Grid.Column="0" Style="{StaticResource FloralPrimary}" />
+                    </Grid>
+                    <ActivityIndicator x:Name="Indicador" IsVisible="False" IsRunning="False"
+                                       Color="{StaticResource FloralGreen}" />
+                </VerticalStackLayout>
+            </Border>
+            <Label Text="Revisa también tu bandeja de correo no deseado." Style="{StaticResource FloralBody}" FontSize="12"
+                   HorizontalTextAlignment="Center" Margin="8,0" />
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
