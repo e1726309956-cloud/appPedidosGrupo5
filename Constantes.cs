@@ -3,6 +3,8 @@ namespace appPedidosGrupo5;
 /// <summary>Identificadores de pantallas y mensajes compartidos de la aplicación.</summary>
 public static class Constantes
 {
+    public const bool UsarAutenticacion = false;
+
     public const string PantallaCatalogo = "catalogo";
     public const string PantallaPedidos = "pedidos";
     public const string PantallaAdministracion = "administracion";

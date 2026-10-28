@@ -4,9 +4,17 @@ namespace appPedidosGrupo5.Views;
 
 public partial class vMenu : ContentPage
 {
-    private readonly PermisosService permisos;
+    private readonly PermisosService? permisos;
+    private bool ModoDemostracion => permisos is null;
     private bool ocupado;
     private bool cerrada;
+
+    public vMenu()
+    {
+        InitializeComponent();
+        BotonCerrarSesion.IsVisible = BotonCerrarSesionMenu.IsVisible = false;
+        BotonActualizar.Text = "Actualizar inicio";
+    }
 
     public vMenu(PermisosService permisos)
     {
@@ -34,7 +42,7 @@ public partial class vMenu : ContentPage
     private void CerrarSesion_Clicked(object? sender, EventArgs e)
     {
         cerrada = true;
-        if (Window is not null) Window.Page = new NavigationPage(new vLogin());
+        if (Window is not null) Window.Page = App.CrearPaginaInicial();
     }
 
     private void CambiarEstado(bool valor)
@@ -59,7 +67,7 @@ public partial class vMenu : ContentPage
         LimpiarOpciones("Consultando tus accesos…");
         try
         {
-            await permisos.ActualizarAsync();
+            if (permisos is not null) await permisos.ActualizarAsync();
             if (cerrada) return;
             MostrarOpciones();
         }
@@ -74,18 +82,19 @@ public partial class vMenu : ContentPage
 
     private void MostrarOpciones()
     {
-        var (nombre, saludo, descripcion) = permisos.Rol switch
+        var (nombre, saludo, descripcion) = (permisos?.Rol ?? "demostracion") switch
         {
+            "demostracion" => ("Demostración", "Bienvenido a tu florería", "Explora las pantallas de ejemplo sin iniciar sesión."),
             "cliente" => ("Cliente", "Un detalle para cada ocasión", "Descubre tu próximo detalle y encuentra las opciones disponibles para ti."),
             "vendedor" => ("Vendedor", "Cada detalle comienza contigo", "Accede a tus herramientas para acompañar a nuestros clientes."),
             _ => ("Administrador", "Tu florería, en un solo lugar", "Accede a las secciones habilitadas para organizar tu trabajo.")
         };
         EtiquetaRol.Text = "ESPACIO " + nombre.ToUpperInvariant();
-        RolMenu.Text = "Sesión de " + nombre.ToLowerInvariant();
+        RolMenu.Text = ModoDemostracion ? "Modo de demostración · Sin sesión" : "Sesión de " + nombre.ToLowerInvariant();
         Saludo.Text = saludo;
         DescripcionRol.Text = descripcion;
         LimpiarOpciones("");
-        foreach (var pantalla in RegistroPantallas.Todas.Where(p => permisos.PuedeAcceder(p.Id)))
+        foreach (var pantalla in RegistroPantallas.Todas.Where(p => ModoDemostracion || permisos!.PuedeAcceder(p.Id)))
         {
             var abrir = new Button { Text = "Abrir " + pantalla.Nombre.ToLowerInvariant() };
             abrir.SetDynamicResource(StyleProperty, "BotonPrincipalFloral");
@@ -109,7 +118,7 @@ public partial class vMenu : ContentPage
         }
         var mensaje = Tarjetas.Children.Count == 0
             ? "Todavía no tienes secciones habilitadas. Puedes actualizar tus accesos o consultar al administrador."
-            : "Elige una sección para comenzar.";
+            : ModoDemostracion ? "Vista previa local. Las opciones abren ejemplos sin datos de Firebase." : "Elige una sección para comenzar.";
         Estado.Text = EstadoMenu.Text = mensaje;
     }
 
@@ -119,16 +128,19 @@ public partial class vMenu : ContentPage
         CambiarEstado(true);
         try
         {
-            await permisos.ActualizarAsync();
+            if (permisos is not null) await permisos.ActualizarAsync();
             if (cerrada) return;
             MostrarOpciones();
-            if (!permisos.PuedeAcceder(pantalla.Id))
+            if (permisos is not null && !permisos.PuedeAcceder(pantalla.Id))
             {
                 await DisplayAlertAsync(Constantes.TituloAccesoRestringido, Constantes.AccesoDenegado, Constantes.Aceptar);
                 return;
             }
             PanelMenu.IsVisible = false;
-            await Navigation.PushAsync(pantalla.CrearPagina());
+            // La vista previa siempre abre ejemplos, incluso cuando se añadan páginas reales al registro.
+            await Navigation.PushAsync(ModoDemostracion
+                ? new vSeccionEjemplo(pantalla.Nombre, pantalla.Descripcion)
+                : pantalla.CrearPagina());
         }
         catch (Exception error)
         {
