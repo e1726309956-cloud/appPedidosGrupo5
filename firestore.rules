@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function autenticado() {
+      return request.auth != null;
+    }
+    function administrador() {
+      return autenticado() &&
+        get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol == 'administrador';
+    }
+    function puedeAcceder(pantalla) {
+      let rol = get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol;
+      return get(/databases/$(database)/documents/roles/$(rol)).data.pantallas[pantalla] == true;
+    }
+    match /usuarios/{uid} {
+      allow get: if autenticado() && (request.auth.uid == uid || administrador());
+      allow list: if administrador();
+      // El registro actual solo crea Authentication. El perfil se configura en consola.
+      allow create, update, delete: if administrador();
+    }
+    match /roles/{rol} {
+      // Los usuarios autenticados pueden consultar los roles necesarios para el menú.
+      allow get: if autenticado();
+      allow list, create, update, delete: if administrador();
+    }
+    // Colección exclusiva de demostración; no contiene pedidos ni datos de clientes.
+    match /ejemplos/{pantalla} {
+      allow read: if autenticado() && puedeAcceder(pantalla);
+      allow write: if administrador() && puedeAcceder(pantalla);
+    }
+    // Las colecciones futuras necesitan reglas específicas para sus datos y operaciones.
+    match /{documento=**} {
+      allow read, write: if false;
+    }
+  }
+}
