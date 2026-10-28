@@ -1,5 +1,7 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
+using System.Net;
+using System.Net.Http.Headers;
 
 namespace appPedidosGrupo5.Services;
 
@@ -27,7 +29,7 @@ public class FirebaseAuthService
         return respuesta.GetProperty("localId").GetString()!;
     }
 
-    public async Task<string> IniciarSesionAsync(
+    public async Task<SesionFirebase> IniciarSesionAsync(
         string correo, string contrasena)
     {
         var respuesta = await EnviarAsync(
@@ -38,8 +40,56 @@ public class FirebaseAuthService
                 returnSecureToken = true
             });
 
-        // Devuelve el token de acceso de la sesión.
-        return respuesta.GetProperty("idToken").GetString()!;
+        var uid = respuesta.GetProperty("localId").GetString()!;
+        var token = respuesta.GetProperty("idToken").GetString()!;
+
+        var partes = token.Split('.');
+        if (partes.Length != 3)
+            throw new InvalidOperationException("Firebase devolvió un token de sesión inválido.");
+        var payload = partes[1].Replace('-', '+').Replace('_', '/');
+        payload = payload.PadRight((payload.Length + 3) / 4 * 4, '=');
+        using var documento = JsonDocument.Parse(Convert.FromBase64String(payload));
+        var proyectoId = documento.RootElement.GetProperty("aud").GetString();
+        if (string.IsNullOrWhiteSpace(proyectoId))
+            throw new InvalidOperationException("No se pudo identificar el proyecto de Firebase.");
+        return new SesionFirebase(uid, token, proyectoId);
+    }
+
+    public async Task<string> ObtenerRolAsync(SesionFirebase sesion)
+    {
+        var url = "https://firestore.googleapis.com/v1/projects/" +
+            Uri.EscapeDataString(sesion.ProyectoId) +
+            "/databases/(default)/documents/usuarios/" +
+            Uri.EscapeDataString(sesion.Uid);
+
+        using var solicitud = new HttpRequestMessage(HttpMethod.Get, url);
+        solicitud.Headers.Authorization = new AuthenticationHeaderValue("Bearer", sesion.IdToken);
+        using var respuesta = await Cliente.SendAsync(solicitud);
+        if (respuesta.StatusCode == HttpStatusCode.NotFound)
+            throw new InvalidOperationException(
+                "No se encontró el perfil en usuarios/" + sesion.Uid +
+                ". Comprueba que el ID del documento coincida con el UID de Authentication.");
+        if (respuesta.StatusCode == HttpStatusCode.Forbidden)
+            throw new InvalidOperationException(
+                "Firestore no permitió consultar el rol. Revisa las reglas de lectura del perfil del usuario.");
+        if (respuesta.StatusCode == HttpStatusCode.Unauthorized)
+            throw new InvalidOperationException(
+                "Firestore no aceptó la sesión. Vuelve a iniciar sesión.");
+        if (!respuesta.IsSuccessStatusCode)
+            throw new InvalidOperationException(
+                "No se pudo consultar el rol en Firestore. Inténtalo nuevamente.");
+
+        using var documento = JsonDocument.Parse(await respuesta.Content.ReadAsStringAsync());
+        if (!documento.RootElement.TryGetProperty("fields", out var campos) ||
+            !campos.TryGetProperty("rol", out var campoRol) ||
+            !campoRol.TryGetProperty("stringValue", out var valorRol) ||
+            valorRol.ValueKind != JsonValueKind.String ||
+            string.IsNullOrWhiteSpace(valorRol.GetString()))
+        {
+            throw new InvalidOperationException(
+                "El perfil existe, pero el campo rol debe contener un texto válido.");
+        }
+        return valorRol.GetString()!;
     }
 
     public async Task RecuperarContrasenaAsync(string correo)
@@ -86,6 +136,8 @@ public class FirebaseAuthService
 
         return raiz.Clone();
     }
+
+    public sealed record SesionFirebase(string Uid, string IdToken, string ProyectoId);
 
     private static string TraducirError(string codigo)
     {

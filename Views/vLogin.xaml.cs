@@ -21,15 +21,20 @@ public partial class vLogin : ContentPage
         }
 
         CambiarEstado(true);
+        var autenticado = false;
         try
         {
-            await servicio.IniciarSesionAsync(txtCorreo.Text.Trim(), txtContrasena.Text);
+            var sesion = await servicio.IniciarSesionAsync(txtCorreo.Text.Trim(), txtContrasena.Text);
+            autenticado = true;
             txtContrasena.Text = string.Empty;
-            await DisplayAlertAsync("Inicio de sesión correcto", "Bienvenido a Pedidos Grupo 5.", "Aceptar");
+            var rol = await servicio.ObtenerRolAsync(sesion);
+            await DisplayAlertAsync("Inicio de sesión correcto", $"Tu rol es: {rol}", "Aceptar");
         }
         catch (Exception error)
         {
-            await DisplayAlertAsync("No se pudo iniciar sesión", ValidacionSeguridad.MensajeError(error), "Aceptar");
+            await DisplayAlertAsync(
+                autenticado ? "Sesión iniciada, pero no se pudo consultar el rol" : "No se pudo iniciar sesión",
+                ValidacionSeguridad.MensajeError(error), "Aceptar");
         }
         finally { CambiarEstado(false); }
     }
