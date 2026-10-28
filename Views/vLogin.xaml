@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appPedidosGrupo5.Views.vLogin"
+             Title="Iniciar sesión">
+    <ScrollView>
+      <VerticalStackLayout x:Name="Formulario" Padding="24" Spacing="18"
+                           MaximumWidthRequest="480" HorizontalOptions="Fill">
+        <Label Text="Pedidos · Grupo 5" FontSize="28" FontAttributes="Bold" />
+        <Label Text="Ingresa con tu correo y contraseña." />
+        <Label Text="Correo electrónico" />
+        <Entry x:Name="txtCorreo" Placeholder="nombre@correo.com"
+               Keyboard="Email" MaxLength="254" />
+        <Label Text="Contraseña" />
+        <Entry x:Name="txtContrasena" Placeholder="Ingresa tu contraseña" IsPassword="True" />
+        <Button Text="Iniciar sesión" Clicked="btnIngresar_Clicked" />
+        <Button Text="Registrarse" Clicked="btnRegistro_Clicked" />
+        <Button Text="Recuperar contraseña" Clicked="btnRecuperar_Clicked" />
+        <ActivityIndicator x:Name="Indicador" IsVisible="False" IsRunning="False" />
+      </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appPedidosGrupo5.Views.vRegistro"
+             Title="Registrarse">
+    <ScrollView>
+      <VerticalStackLayout x:Name="Formulario" Padding="24" Spacing="18"
+                           MaximumWidthRequest="480" HorizontalOptions="Fill">
+        <Label Text="Crea tu cuenta" FontSize="28" FontAttributes="Bold" />
+        <Label Text="Usa tu correo y una contraseña de al menos 6 caracteres." />
+        <Label Text="Correo electrónico" />
+        <Entry x:Name="txtCorreo" Placeholder="nombre@correo.com"
+               Keyboard="Email" MaxLength="254" />
+        <Label Text="Contraseña" />
+        <Entry x:Name="txtContrasena" Placeholder="Ingresa tu contraseña" IsPassword="True" />
+        <Label Text="Confirmar contraseña" />
+        <Entry x:Name="txtConfirmacion" Placeholder="Repite tu contraseña" IsPassword="True" />
+        <Button Text="Crear cuenta" Clicked="btnRegistrar_Clicked" />
+        <ActivityIndicator x:Name="Indicador" IsVisible="False" IsRunning="False" />
+      </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

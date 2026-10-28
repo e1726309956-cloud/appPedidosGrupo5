@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appPedidosGrupo5.Views.vRecuperarContrasena"
+             Title="Recuperar contraseña">
+    <ScrollView>
+      <VerticalStackLayout x:Name="Formulario" Padding="24" Spacing="18"
+                           MaximumWidthRequest="480" HorizontalOptions="Fill">
+        <Label Text="Recupera tu acceso" FontSize="28" FontAttributes="Bold" />
+        <Label Text="Te enviaremos un enlace para restablecer tu contraseña." />
+        <Label Text="Correo electrónico" />
+        <Entry x:Name="txtCorreo" Placeholder="nombre@correo.com"
+               Keyboard="Email" MaxLength="254" />
+        <Button Text="Enviar enlace de recuperación" Clicked="btnEnviar_Clicked" />
+        <ActivityIndicator x:Name="Indicador" IsVisible="False" IsRunning="False" />
+      </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,53 @@
+namespace appPedidosGrupo5.Views;
+
+public partial class vLogin : ContentPage
+{
+    private readonly Services.FirebaseAuthService servicio = new();
+    private bool ocupado;
+
+    public vLogin()
+    {
+        InitializeComponent();
+    }
+
+    private async void btnIngresar_Clicked(object? sender, EventArgs e)
+    {
+        if (ocupado) return;
+        if (!ValidacionSeguridad.CorreoValido(txtCorreo.Text) ||
+            string.IsNullOrEmpty(txtContrasena.Text))
+        {
+            await DisplayAlertAsync("Revisa tus datos", "Ingresa un correo válido y tu contraseña.", "Aceptar");
+            return;
+        }
+
+        CambiarEstado(true);
+        try
+        {
+            await servicio.IniciarSesionAsync(txtCorreo.Text.Trim(), txtContrasena.Text);
+            txtContrasena.Text = string.Empty;
+            await DisplayAlertAsync("Inicio de sesión correcto", "Bienvenido a Pedidos Grupo 5.", "Aceptar");
+        }
+        catch (Exception error)
+        {
+            await DisplayAlertAsync("No se pudo iniciar sesión", ValidacionSeguridad.MensajeError(error), "Aceptar");
+        }
+        finally { CambiarEstado(false); }
+    }
+
+    private async void btnRegistro_Clicked(object? sender, EventArgs e)
+    {
+        if (!ocupado) await Navigation.PushAsync(new vRegistro());
+    }
+
+    private async void btnRecuperar_Clicked(object? sender, EventArgs e)
+    {
+        if (!ocupado) await Navigation.PushAsync(new vRecuperarContrasena());
+    }
+
+    private void CambiarEstado(bool valor)
+    {
+        ocupado = valor;
+        Formulario.IsEnabled = !valor;
+        Indicador.IsVisible = Indicador.IsRunning = valor;
+    }
+}
