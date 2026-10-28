@@ -28,6 +28,11 @@ public partial class vRegistro : ContentPage
             await DisplayAlertAsync("Revisa tu contraseña", "Las contraseñas no coinciden.", "Aceptar");
             return;
         }
+        if (!ValidacionSeguridad.HayInternet())
+        {
+            await DisplayAlertAsync("Sin conexión a Internet", "No tienes acceso a Internet. Conéctate a una red e inténtalo nuevamente.", "Aceptar");
+            return;
+        }
 
         CambiarEstado(true);
         try

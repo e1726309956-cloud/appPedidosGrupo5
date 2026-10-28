@@ -18,6 +18,11 @@ public partial class vRecuperarContrasena : ContentPage
             await DisplayAlertAsync("Revisa tus datos", "Ingresa un correo electrónico válido.", "Aceptar");
             return;
         }
+        if (!ValidacionSeguridad.HayInternet())
+        {
+            await DisplayAlertAsync("Sin conexión a Internet", "No tienes acceso a Internet. Conéctate a una red e inténtalo nuevamente.", "Aceptar");
+            return;
+        }
 
         CambiarEstado(true);
         try

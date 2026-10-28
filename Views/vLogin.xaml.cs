@@ -20,6 +20,12 @@ public partial class vLogin : ContentPage
             return;
         }
 
+        if (!ValidacionSeguridad.HayInternet())
+        {
+            await DisplayAlertAsync("Sin conexión a Internet", "No tienes acceso a Internet. Conéctate a una red e inténtalo nuevamente.", "Aceptar");
+            return;
+        }
+
         CambiarEstado(true);
         var autenticado = false;
         try

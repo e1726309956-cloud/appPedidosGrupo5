@@ -1,9 +1,13 @@
+using Microsoft.Maui.Networking;
 using System.Net.Mail;
 
 namespace appPedidosGrupo5.Views;
 
 internal static class ValidacionSeguridad
 {
+    public static bool HayInternet() =>
+        Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
+
     public static bool CorreoValido(string? correo) =>
         !string.IsNullOrWhiteSpace(correo) &&
         MailAddress.TryCreate(correo.Trim(), out var direccion) &&
