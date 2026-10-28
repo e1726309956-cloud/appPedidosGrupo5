@@ -74,4 +74,10 @@
 	  <Folder Include="Views\" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<EmbeddedResource Include="firebase.local.json"
+		                  LogicalName="appPedidosGrupo5.firebase.local.json"
+		                  Condition="Exists('firebase.local.json')" />
+	</ItemGroup>
+
 </Project>

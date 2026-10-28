@@ -27,13 +27,15 @@ public partial class vLogin : ContentPage
             var sesion = await servicio.IniciarSesionAsync(txtCorreo.Text.Trim(), txtContrasena.Text);
             autenticado = true;
             txtContrasena.Text = string.Empty;
-            var rol = await servicio.ObtenerRolAsync(sesion);
-            await DisplayAlertAsync("Inicio de sesión correcto", $"Tu rol es: {rol}", "Aceptar");
+            var permisos = new Services.PermisosService(sesion);
+            await permisos.ActualizarAsync();
+            if (Window is not null)
+                Window.Page = new NavigationPage(new vMenu(permisos));
         }
         catch (Exception error)
         {
             await DisplayAlertAsync(
-                autenticado ? "Sesión iniciada, pero no se pudo consultar el rol" : "No se pudo iniciar sesión",
+                autenticado ? "No se pudieron cargar los accesos" : "No se pudo iniciar sesión",
                 ValidacionSeguridad.MensajeError(error), "Aceptar");
         }
         finally { CambiarEstado(false); }

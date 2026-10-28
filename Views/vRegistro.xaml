@@ -19,36 +19,36 @@
                         <Label Text="G R U P O  5" FontSize="10" TextColor="#677369" />
                     </VerticalStackLayout>
                 </Grid>
-                <Label Text="Cada detalle cuenta." Style="{StaticResource FloralTitle}" Margin="0,10,0,0" />
-                <Label Text="Tu próxima sorpresa empieza aquí." Style="{StaticResource FloralBody}" />
+                <Label Text="Cada detalle cuenta." Style="{StaticResource TituloFloral}" Margin="0,10,0,0" />
+                <Label Text="Tu próxima sorpresa empieza aquí." Style="{StaticResource TextoFloral}" />
             </VerticalStackLayout>
             <Border BackgroundColor="White" Stroke="#EAE7DF" StrokeShape="RoundRectangle 24" Padding="24">
                 <VerticalStackLayout Spacing="20">
                     <VerticalStackLayout Spacing="8">
                         <BoxView Color="{StaticResource FloralRose}" HeightRequest="4" WidthRequest="36"
                                  HorizontalOptions="Start" CornerRadius="2" />
-                        <Label Text="Crea tu cuenta" Style="{StaticResource FloralTitle}" FontSize="22" />
-                        <Label Text="Regístrate para comenzar a elegir tus flores favoritas." Style="{StaticResource FloralBody}" />
+                        <Label Text="Crea tu cuenta" Style="{StaticResource TituloFloral}" FontSize="22" />
+                        <Label Text="Regístrate para comenzar a elegir tus flores favoritas." Style="{StaticResource TextoFloral}" />
                     </VerticalStackLayout>
                 <VerticalStackLayout Spacing="7">
-                    <Label Text="Correo electrónico" Style="{StaticResource FloralLabel}" />
-                    <Border Style="{StaticResource FloralFieldBorder}">
+                    <Label Text="Correo electrónico" Style="{StaticResource EtiquetaFloral}" />
+                    <Border Style="{StaticResource BordeCampoFloral}">
                         <Entry x:Name="txtCorreo" Placeholder="nombre@correo.com"
-                               Keyboard="Email" MaxLength="254" Style="{StaticResource FloralEntry}" />
+                               Keyboard="Email" MaxLength="254" Style="{StaticResource EntradaFloral}" />
                     </Border>
                 </VerticalStackLayout>
                 <VerticalStackLayout Spacing="7">
-                    <Label Text="Contraseña" Style="{StaticResource FloralLabel}" />
-                    <Border Style="{StaticResource FloralFieldBorder}">
+                    <Label Text="Contraseña" Style="{StaticResource EtiquetaFloral}" />
+                    <Border Style="{StaticResource BordeCampoFloral}">
                         <Entry x:Name="txtContrasena" Placeholder="Al menos 6 caracteres"
-                               IsPassword="True" Style="{StaticResource FloralEntry}" />
+                               IsPassword="True" Style="{StaticResource EntradaFloral}" />
                     </Border>
                 </VerticalStackLayout>
                 <VerticalStackLayout Spacing="7">
-                    <Label Text="Confirmar contraseña" Style="{StaticResource FloralLabel}" />
-                    <Border Style="{StaticResource FloralFieldBorder}">
+                    <Label Text="Confirmar contraseña" Style="{StaticResource EtiquetaFloral}" />
+                    <Border Style="{StaticResource BordeCampoFloral}">
                         <Entry x:Name="txtConfirmacion" Placeholder="Repite tu contraseña"
-                               IsPassword="True" Style="{StaticResource FloralEntry}" />
+                               IsPassword="True" Style="{StaticResource EntradaFloral}" />
                     </Border>
                 </VerticalStackLayout>
                     <Grid RowSpacing="10">
@@ -59,13 +59,13 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Button Text="Crear cuenta" Clicked="btnRegistrar_Clicked"
-                                Grid.Row="0" Grid.Column="0" Style="{StaticResource FloralPrimary}" />
+                                Grid.Row="0" Grid.Column="0" Style="{StaticResource BotonPrincipalFloral}" />
                     </Grid>
                     <ActivityIndicator x:Name="Indicador" IsVisible="False" IsRunning="False"
                                        Color="{StaticResource FloralGreen}" />
                 </VerticalStackLayout>
             </Border>
-            <Label Text="Flores para celebrar, agradecer y acompañar." Style="{StaticResource FloralBody}" FontSize="12"
+            <Label Text="Flores para celebrar, agradecer y acompañar." Style="{StaticResource TextoFloral}" FontSize="12"
                    HorizontalTextAlignment="Center" Margin="8,0" />
         </VerticalStackLayout>
     </ScrollView>
