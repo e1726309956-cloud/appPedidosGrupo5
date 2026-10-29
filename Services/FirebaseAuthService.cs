@@ -13,7 +13,7 @@ public class FirebaseAuthService
     };
 
     public async Task<string> RegistrarAsync(
-        string correo, string contrasena)
+        string nombre, string correo, string contrasena)
     {
         var respuesta = await EnviarAsync("accounts:signUp", new
         {
@@ -30,11 +30,18 @@ public class FirebaseAuthService
         try
         {
             var sesion = LeerSesion(respuesta);
-            await CrearPerfilClienteAsync(sesion);
+            await CrearPerfilClienteAsync(sesion, nombre.Trim());
         }
         catch (Exception error)
         {
-            throw new InvalidOperationException(Constantes.ErrorRegistroParcial, error);
+            var detalle = error switch
+            {
+                InvalidOperationException => error.Message,
+                HttpRequestException => Constantes.ErrorConexion,
+                TaskCanceledException => Constantes.ErrorTiempoEspera,
+                _ => Constantes.ErrorGeneral
+            };
+            throw new InvalidOperationException(Constantes.ErrorRegistroParcial + "\n\n" + detalle, error);
         }
 
         return localId.GetString()!;
@@ -82,10 +89,12 @@ public class FirebaseAuthService
         var proyectoId = aud.GetString();
         if (string.IsNullOrWhiteSpace(proyectoId))
             throw new InvalidOperationException(Constantes.ErrorProyectoFirebase);
-        return new SesionFirebase(uid, token, proyectoId);
+        var correo = documento.RootElement.TryGetProperty("email", out var email) &&
+            email.ValueKind == JsonValueKind.String ? email.GetString()! : "";
+        return new SesionFirebase(uid, token, proyectoId, correo);
     }
 
-    private static async Task CrearPerfilClienteAsync(SesionFirebase sesion)
+    private static async Task CrearPerfilClienteAsync(SesionFirebase sesion, string nombre = "")
     {
         // createDocument solo crea: nunca reemplaza el rol de un perfil existente.
         var url = "https://firestore.googleapis.com/v1/projects/" +
@@ -95,11 +104,22 @@ public class FirebaseAuthService
         solicitud.Headers.Authorization = new AuthenticationHeaderValue("Bearer", sesion.IdToken);
         solicitud.Content = JsonContent.Create(new
         {
-            fields = new { rol = new { stringValue = Constantes.RolCliente } }
+            fields = new
+            {
+                nombre = new { stringValue = nombre },
+                correo = new { stringValue = sesion.Correo },
+                rol = new { stringValue = Constantes.RolCliente }
+            }
         });
         using var respuesta = await Cliente.SendAsync(solicitud);
+        if (respuesta.StatusCode == HttpStatusCode.Forbidden)
+            throw new InvalidOperationException(string.Format(Constantes.ErrorCreacionPerfilDenegada,
+                sesion.ProyectoId, sesion.Uid));
+        if (respuesta.StatusCode == HttpStatusCode.Unauthorized)
+            throw new InvalidOperationException(Constantes.ErrorSesionRechazada);
         if (!respuesta.IsSuccessStatusCode)
-            throw new InvalidOperationException(Constantes.ErrorCrearPerfilCliente);
+            throw new InvalidOperationException(Constantes.ErrorCrearPerfilCliente + "\n" +
+                string.Format(Constantes.ErrorDestinoPerfil, sesion.ProyectoId, sesion.Uid, (int)respuesta.StatusCode));
     }
 
     public async Task<string> ObtenerRolAsync(SesionFirebase sesion)
@@ -182,7 +202,7 @@ public class FirebaseAuthService
         return raiz.Clone();
     }
 
-    public sealed record SesionFirebase(string Uid, string IdToken, string ProyectoId);
+    public sealed record SesionFirebase(string Uid, string IdToken, string ProyectoId, string Correo = "");
 
     private static string TraducirError(string codigo)
     {

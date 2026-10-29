@@ -17,7 +17,12 @@ service cloud.firestore {
       allow list: if administrador();
       // Cada usuario solo puede crear su propio perfil y únicamente con rol cliente.
       allow create: if (autenticado() && request.auth.uid == uid &&
-        request.resource.data.keys().hasOnly(['rol']) &&
+        request.resource.data.keys().hasAll(['nombre', 'correo', 'rol']) &&
+        request.resource.data.keys().hasOnly(['nombre', 'correo', 'rol']) &&
+        request.resource.data.nombre is string &&
+        request.resource.data.nombre.size() <= 100 &&
+        request.resource.data.correo is string &&
+        request.resource.data.correo == request.auth.token.email &&
         request.resource.data.rol == 'cliente') || administrador();
       allow update, delete: if administrador();
     }

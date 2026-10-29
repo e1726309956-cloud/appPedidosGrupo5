@@ -13,6 +13,11 @@ public partial class vRegistro : ContentPage
     private async void btnRegistrar_Clicked(object? sender, EventArgs e)
     {
         if (ocupado) return;
+        if (!ValidacionSeguridad.NombreValido(txtNombre.Text))
+        {
+            await DisplayAlertAsync(Constantes.TituloRevisarDatos, Constantes.NombreRequerido, Constantes.Aceptar);
+            return;
+        }
         if (!ValidacionSeguridad.CorreoValido(txtCorreo.Text))
         {
             await DisplayAlertAsync(Constantes.TituloRevisarDatos, Constantes.CorreoRequerido, Constantes.Aceptar);
@@ -37,7 +42,7 @@ public partial class vRegistro : ContentPage
         CambiarEstado(true);
         try
         {
-            await servicio.RegistrarAsync(txtCorreo.Text.Trim(), txtContrasena.Text);
+            await servicio.RegistrarAsync(txtNombre.Text.Trim(), txtCorreo.Text.Trim(), txtContrasena.Text);
             txtContrasena.Text = txtConfirmacion.Text = string.Empty;
             await DisplayAlertAsync("Cuenta creada", "Tu cuenta se registró como cliente. Ya puedes iniciar sesión con tu correo y contraseña.", Constantes.Aceptar);
             await Navigation.PopAsync();
