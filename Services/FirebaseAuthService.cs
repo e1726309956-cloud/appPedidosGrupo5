@@ -27,6 +27,16 @@ public class FirebaseAuthService
             string.IsNullOrWhiteSpace(localId.GetString()))
             throw new InvalidOperationException(Constantes.ErrorIdentificadorCuenta);
 
+        try
+        {
+            var sesion = LeerSesion(respuesta);
+            await CrearPerfilClienteAsync(sesion);
+        }
+        catch (Exception error)
+        {
+            throw new InvalidOperationException(Constantes.ErrorRegistroParcial, error);
+        }
+
         return localId.GetString()!;
     }
 
@@ -41,6 +51,11 @@ public class FirebaseAuthService
                 returnSecureToken = true
             });
 
+        return LeerSesion(respuesta);
+    }
+
+    private static SesionFirebase LeerSesion(JsonElement respuesta)
+    {
         if (!respuesta.TryGetProperty("localId", out var localId) ||
             localId.ValueKind != JsonValueKind.String ||
             string.IsNullOrWhiteSpace(localId.GetString()))
@@ -70,6 +85,23 @@ public class FirebaseAuthService
         return new SesionFirebase(uid, token, proyectoId);
     }
 
+    private static async Task CrearPerfilClienteAsync(SesionFirebase sesion)
+    {
+        // createDocument solo crea: nunca reemplaza el rol de un perfil existente.
+        var url = "https://firestore.googleapis.com/v1/projects/" +
+            Uri.EscapeDataString(sesion.ProyectoId) +
+            "/databases/(default)/documents/usuarios?documentId=" + Uri.EscapeDataString(sesion.Uid);
+        using var solicitud = new HttpRequestMessage(HttpMethod.Post, url);
+        solicitud.Headers.Authorization = new AuthenticationHeaderValue("Bearer", sesion.IdToken);
+        solicitud.Content = JsonContent.Create(new
+        {
+            fields = new { rol = new { stringValue = Constantes.RolCliente } }
+        });
+        using var respuesta = await Cliente.SendAsync(solicitud);
+        if (!respuesta.IsSuccessStatusCode)
+            throw new InvalidOperationException(Constantes.ErrorCrearPerfilCliente);
+    }
+
     public async Task<string> ObtenerRolAsync(SesionFirebase sesion)
     {
         var url = "https://firestore.googleapis.com/v1/projects/" +
@@ -81,8 +113,11 @@ public class FirebaseAuthService
         solicitud.Headers.Authorization = new AuthenticationHeaderValue("Bearer", sesion.IdToken);
         using var respuesta = await Cliente.SendAsync(solicitud);
         if (respuesta.StatusCode == HttpStatusCode.NotFound)
-            throw new InvalidOperationException(
-                string.Format(Constantes.ErrorPerfilAusente, sesion.Uid));
+        {
+            // Recupera cuentas antiguas o registros cuyo segundo paso falló.
+            await CrearPerfilClienteAsync(sesion);
+            return Constantes.RolCliente;
+        }
         if (respuesta.StatusCode == HttpStatusCode.Forbidden)
             throw new InvalidOperationException(
                 Constantes.ErrorLecturaRol);
