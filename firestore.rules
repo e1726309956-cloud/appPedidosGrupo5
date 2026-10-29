@@ -15,8 +15,11 @@ service cloud.firestore {
     match /usuarios/{uid} {
       allow get: if autenticado() && (request.auth.uid == uid || administrador());
       allow list: if administrador();
-      // El registro actual solo crea Authentication. El perfil se configura en consola.
-      allow create, update, delete: if administrador();
+      // Cada usuario solo puede crear su propio perfil y únicamente con rol cliente.
+      allow create: if (autenticado() && request.auth.uid == uid &&
+        request.resource.data.keys().hasOnly(['rol']) &&
+        request.resource.data.rol == 'cliente') || administrador();
+      allow update, delete: if administrador();
     }
     match /roles/{rol} {
       // Los usuarios autenticados pueden consultar los roles necesarios para el menú.

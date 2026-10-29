@@ -8,6 +8,9 @@ public static class Constantes
     public const string PantallaCatalogo = "catalogo";
     public const string PantallaPedidos = "pedidos";
     public const string PantallaAdministracion = "administracion";
+    public const string RolCliente = "cliente";
+    public const string ErrorCrearPerfilCliente = "No se pudo crear el perfil de cliente. Revisa las reglas de creación de usuarios en Firestore e inténtalo iniciando sesión nuevamente.";
+    public const string ErrorRegistroParcial = "La cuenta de acceso ya fue creada, pero no se pudo completar su perfil de cliente. No vuelvas a registrarte: inicia sesión con el mismo correo y contraseña para reintentar. Si el problema continúa, revisa las reglas de Firestore.";
 
     public const string ErrorConfiguracionAusente = "Falta la configuración de Firebase. Copia firebase.example.json a firebase.local.json, configura ApiKey y vuelve a compilar la aplicación.";
     public const string ErrorPerfilAusente = "No se encontró el perfil en usuarios/{0}. Comprueba que el ID del documento coincida con el UID de Authentication.";

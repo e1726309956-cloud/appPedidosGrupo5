@@ -39,7 +39,7 @@ public partial class vRegistro : ContentPage
         {
             await servicio.RegistrarAsync(txtCorreo.Text.Trim(), txtContrasena.Text);
             txtContrasena.Text = txtConfirmacion.Text = string.Empty;
-            await DisplayAlertAsync("Cuenta creada", "Ya puedes iniciar sesión con tu correo y contraseña.", Constantes.Aceptar);
+            await DisplayAlertAsync("Cuenta creada", "Tu cuenta se registró como cliente. Ya puedes iniciar sesión con tu correo y contraseña.", Constantes.Aceptar);
             await Navigation.PopAsync();
         }
         catch (Exception error)
