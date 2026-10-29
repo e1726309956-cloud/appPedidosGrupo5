@@ -3,13 +3,16 @@ namespace appPedidosGrupo5;
 /// <summary>Identificadores de pantallas y mensajes compartidos de la aplicación.</summary>
 public static class Constantes
 {
-    public const bool UsarAutenticacion = false;
+    public const bool UsarAutenticacion = true;
 
     public const string PantallaCatalogo = "catalogo";
     public const string PantallaPedidos = "pedidos";
     public const string PantallaAdministracion = "administracion";
     public const string RolCliente = "cliente";
+    public const string NombreRequerido = "Ingresa tu nombre completo, con al menos una letra y máximo 100 caracteres, sin saltos de línea.";
     public const string ErrorCrearPerfilCliente = "No se pudo crear el perfil de cliente. Revisa las reglas de creación de usuarios en Firestore e inténtalo iniciando sesión nuevamente.";
+    public const string ErrorCreacionPerfilDenegada = "Firestore rechazó la creación del perfil (403). Publica las reglas actualizadas de firestore.rules en el proyecto {0}. El usuario debe poder crear usuarios/{1} con nombre, correo y rol igual a cliente.";
+    public const string ErrorDestinoPerfil = "Destino del perfil: proyecto {0}, documento usuarios/{1}. Respuesta de Firestore: HTTP {2}.";
     public const string ErrorRegistroParcial = "La cuenta de acceso ya fue creada, pero no se pudo completar su perfil de cliente. No vuelvas a registrarte: inicia sesión con el mismo correo y contraseña para reintentar. Si el problema continúa, revisa las reglas de Firestore.";
 
     public const string ErrorConfiguracionAusente = "Falta la configuración de Firebase. Copia firebase.example.json a firebase.local.json, configura ApiKey y vuelve a compilar la aplicación.";

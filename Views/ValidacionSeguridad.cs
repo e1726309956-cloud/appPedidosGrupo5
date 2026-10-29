@@ -6,6 +6,10 @@ namespace appPedidosGrupo5.Views;
 
 internal static class ValidacionSeguridad
 {
+    public static bool NombreValido(string? nombre) =>
+        !string.IsNullOrWhiteSpace(nombre) && nombre.Trim().Length <= 100 &&
+        nombre.Any(char.IsLetter) && !nombre.Any(char.IsControl);
+
     public static bool HayInternet() =>
         Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
 

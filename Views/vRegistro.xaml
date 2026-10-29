@@ -31,6 +31,13 @@
                         <Label Text="Regístrate para comenzar a elegir tus flores favoritas." Style="{StaticResource TextoFloral}" />
                     </VerticalStackLayout>
                 <VerticalStackLayout Spacing="7">
+                    <Label Text="Nombre completo" Style="{StaticResource EtiquetaFloral}" />
+                    <Border Style="{StaticResource BordeCampoFloral}">
+                        <Entry x:Name="txtNombre" Placeholder="Ingresa tu nombre completo"
+                               MaxLength="100" Style="{StaticResource EntradaFloral}" />
+                    </Border>
+                </VerticalStackLayout>
+                <VerticalStackLayout Spacing="7">
                     <Label Text="Correo electrónico" Style="{StaticResource EtiquetaFloral}" />
                     <Border Style="{StaticResource BordeCampoFloral}">
                         <Entry x:Name="txtCorreo" Placeholder="nombre@correo.com"
